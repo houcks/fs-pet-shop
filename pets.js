@@ -86,7 +86,7 @@ function update(){
                 kind: process.argv[5],
                 name: process.argv[6]
             }
-            animals.splice(index, 0, animal);
+            animals.splice(index, 1, animal);
             fs.writeFile('pets.json', JSON.stringify(animals), function (error) {
                 if (error) throw error;
             });

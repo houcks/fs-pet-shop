@@ -2,46 +2,48 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-
 let fs = require("fs");
-const petRegExp = /^\/pets\/(.*)$/;
+
 try {
   var animals = JSON.parse(fs.readFileSync("pets.json", "utf8"));
 } catch (error) {
   console.error(error);
 }
 
-app.get(petRegExp, (req, res) => {
-  let index = req.url.match(petRegExp)[1];
-  if (!JSON.stringify(animals[index]) || req.url.match(petRegExp)[1] === null) {
+app.get("/pets/:index", (req, res) => {
+  let index = req.params.index;
+  if (!JSON.stringify(animals[index])) {
     notFound(res);
     return;
   } else {
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(animals[index]));
+    res.json(animals[index]);
   }
 });
 
 app
   .route("/pets")
   .get((req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(animals));
+    res.json(animals);
   })
   .post((req, res) => {
-    let animals = JSON.parse(fs.readFileSync("pets.json", "utf8"));
-    animals.push(req.body);
-    fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
-      if (error) throw error;
+    let bodyKeys = ["age", "name", "kind"];
+    //console.log(req.body.age)
+    if(typeof req.body.age !== "number" ||
+    !bodyKeys.every((key) => Object.keys(req.body).includes(key))){
+      res.status(400);
+      res.end();
+    }else{
+      console.log('here');
+      // animals.push(req.body);
+      // fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
+      //   if (error) throw error;
+      res.send('Added');
+      };
     });
-    res.send("some");
-    res.end();
-  });
 
 function notFound(res) {
-  res.setHeader("Content-Type", "text/plain");
-  res.statusCode = 404;
-  res.end("Not found");
+  res.status(404);
+  res.send("Not found");
 }
 //age kind name
 app.listen(8000, () => {

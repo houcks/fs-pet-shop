@@ -11,7 +11,7 @@ try {
 }
 
 app.get("/pets/:index", (req, res) => {
-  let index = req.params.index;
+  const { index } = req.params;
   if (!JSON.stringify(animals[index])) {
     notFound(res);
     return;
@@ -27,19 +27,20 @@ app
   })
   .post((req, res) => {
     let bodyKeys = ["age", "name", "kind"];
-    //console.log(req.body.age)
-    if(typeof req.body.age !== "number" ||
-    !bodyKeys.every((key) => Object.keys(req.body).includes(key))){
+    if (
+      typeof req.body.age !== "number" ||
+      !bodyKeys.every((key) => Object.keys(req.body).includes(key))
+    ) {
       res.status(400);
-      res.end();
-    }else{
-      console.log('here');
-      // animals.push(req.body);
-      // fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
-      //   if (error) throw error;
-      res.send('Added');
-      };
-    });
+      res.send('Bad Request');
+    } else {
+      animals.push(req.body);
+      fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
+        if (error) throw error;
+      });
+      res.send("Added");
+    }
+  });
 
 function notFound(res) {
   res.status(404);

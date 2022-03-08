@@ -22,8 +22,6 @@ switch (subcommand) {
 
 function readText() {
   let index = process.argv[3];
-  //let animals = readJSON();
-  //console.log(animals)
   fs.readFile("pets.json", "utf-8", (error, data) => {
     if (error) {
       console.error(error);
@@ -83,7 +81,6 @@ function update() {
 
 function destroy() {
   if (process.argv.length > 3) {
-    console.log(process.argv.length);
     let index = process.argv[2];
     fs.readFile("pets.json", "utf-8", (error, data) => {
       if (error) throw error;

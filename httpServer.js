@@ -40,7 +40,7 @@ var server = http.createServer((req, res) => {
       } else {
         res.setHeader("Content-Type", "application/json");
         fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
-            if (error) throw error;
+          if (error) throw error;
         });
         animals.push(JSON.parse(body));
         res.end();

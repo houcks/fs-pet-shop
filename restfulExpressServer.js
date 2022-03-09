@@ -18,7 +18,6 @@ app
         if(result.rowCount === 0){
             res.sendStatus(404);
         }
-        console.log(result.rowCount)
         res.send(result.rows[0]);
     })
     .catch((error) => {

@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 
 const http = require("http");
 const port = process.env.PORT || 8000;

@@ -1,29 +1,36 @@
-"user strict";
+"use strict";
 const express = require("express");
 const app = express();
 app.use(express.json());
 let fs = require("fs");
 
-try {
-  var animals = JSON.parse(fs.readFileSync("pets.json", "utf8"));
-} catch (error) {
-  console.error(error);
-}
-
-app.get("/pets/:index", (req, res) => {
+app.
+route("/pets/:index")
+.get( (req, res) => {
   const { index } = req.params;
-  if (!JSON.stringify(animals[index])) {
-    notFound(res);
-    return;
-  } else {
-    res.json(animals[index]);
-  }
-});
+    fs.readFile("pets.json", "utf8", (err, data) =>{
+      if(err){
+        res.status(500)
+      }else{
+        if (!JSON.parse(data)[index]) {
+          notFound(res);
+          return;
+        }
+        res.status(201).send(JSON.parse(data)[index]);
+      }
+    });
+})
 
 app
   .route("/pets")
   .get((req, res) => {
-    res.json(animals);
+    fs.readFile("pets.json", "utf8", (err, data) =>{
+      if(err){
+        res.status(500)
+      }else{
+        res.status(201).send(data);
+      }
+    });
   })
   .post((req, res) => {
     let bodyKeys = ["age", "name", "kind"];
@@ -31,16 +38,27 @@ app
       typeof req.body.age !== "number" ||
       !bodyKeys.every((key) => Object.keys(req.body).includes(key))
     ) {
-      res.status(400);
-      res.send('Bad Request');
+      res.status(400).send('Bad Request');
     } else {
-      animals.push(req.body);
-      fs.writeFileSync("pets.json", JSON.stringify(animals), (error) => {
-        if (error) throw error;
+      const newPet = { 
+        age: req.body.age, 
+        name: req.body.name, 
+        kind: req.body.kind
+      };
+
+      fs.readFile("pets.json", "utf8", (err, data) =>{
+        parsedData = JSON.parse(data);
+        parsedData.push(newPet);
+      fs.writeFile("pets.json", JSON.stringify(parsedData), (error) => {
+        if (error){
+          res.status(500).send();
+        } else {
+          res.status(201).send(newPet);
+        }
       });
-      res.send("Added");
-    }
-  });
+    });
+  }
+});
 
 function notFound(res) {
   res.status(404);
